@@ -76,7 +76,7 @@ public class NavritiDetails implements Serializable {
 	private Long savings;
 	
 	@Column(name = "elapsed_time")
-	private int elapsedTime;
+	private Integer elapsedTime;
 	
 	@Column(name = "client")
 	private String client;
@@ -356,14 +356,14 @@ public class NavritiDetails implements Serializable {
 	/**
 	 * @return the elapsedTime
 	 */
-	public int getElapsedTime() {
+	public Integer getElapsedTime() {
 		return elapsedTime;
 	}
 
 	/**
 	 * @param elapsedTime the elapsedTime to set
 	 */
-	public void setElapsedTime(int elapsedTime) {
+	public void setElapsedTime(Integer elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
 

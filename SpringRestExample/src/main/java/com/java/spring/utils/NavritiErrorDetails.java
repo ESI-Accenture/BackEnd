@@ -1,6 +1,7 @@
 package com.java.spring.utils;
 
 import java.util.List;
+import java.util.Set;
 
 import com.java.spring.dto.NavritiDto;
 
@@ -8,7 +9,7 @@ public class NavritiErrorDetails {
 
 	public String errorCode;
 	public String errorMessage;
-	public List<NavritiDto> navritiDto;
+	public Set<NavritiDto> navritiDto;
 	/**
 	 * @return the errorCode
 	 */
@@ -36,13 +37,13 @@ public class NavritiErrorDetails {
 	/**
 	 * @return the navritiDto
 	 */
-	public List<NavritiDto> getNavritiDto() {
+	public Set<NavritiDto> getNavritiDto() {
 		return navritiDto;
 	}
 	/**
 	 * @param navritiDto the navritiDto to set
 	 */
-	public void setNavritiDto(List<NavritiDto> navritiDto) {
+	public void setNavritiDto(Set<NavritiDto> navritiDto) {
 		this.navritiDto = navritiDto;
 	}
 	

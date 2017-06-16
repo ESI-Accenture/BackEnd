@@ -14,6 +14,7 @@ public class URIConstants {
 	public static final String DELETE_EMP = "/rest/emp/delete/{id}";
 	public static final String FILE_UPLOAD = "/rest/emp/imageupload";
 	public static final String SAVE_IDEA = "/rest/emp/saveidea";
+	public static final String GET_IDEA_DETAILS = "/rest/emp/getideas";
 	public static final String GET_IDEA_DETAILS_BY_USER_ID = "/rest/emp/getideabyuserid/{empUserId}";
 	public static final String GET_IDEA_DETAILS_BY_IDEA_ID = "/rest/emp/getideabyideaid/{ideaId}";
 	public static final String GET_PORTAL_CONSTANTS = "/rest/emp/getconstants";

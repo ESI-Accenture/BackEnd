@@ -277,4 +277,18 @@ public class EmpDaoImpl implements EmpDao {
 		criteria.add(Restrictions.eq("portfolioDetails", portfolioDetails));
 		return criteria.list();
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional
+	public List<NavritiDetails> getIdeaDetails() {
+		List<NavritiDetails> navritiDetails = null;
+		Session session = this.sessionFactory.getCurrentSession();
+		Criteria crit = session.createCriteria(NavritiDetails.class);
+		if (null != crit.list() && !crit.list().isEmpty()) {
+			navritiDetails = (List<NavritiDetails>) crit.list();
+		}
+//		System.out.println("navritiData : " + navritiDetails);
+		return navritiDetails;
+	}
 }

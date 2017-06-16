@@ -1,4 +1,4 @@
-package com.java.spring.service;
+/*package com.java.spring.service;
 
 import java.util.Date;
 
@@ -14,3 +14,4 @@ public class Test {
 	}
 
 }
+*/

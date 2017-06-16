@@ -54,4 +54,6 @@ public interface EmpDao {
 	List<PortfolioDetails> getPortfolios();
 
 	List<AppDetails> getApps(Long id);
+
+	List<NavritiDetails> getIdeaDetails();
 }

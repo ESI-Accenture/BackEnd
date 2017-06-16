@@ -39,7 +39,7 @@ CREATE TABLE `user_login` (
 
 LOCK TABLES `user_login` WRITE;
 /*!40000 ALTER TABLE `user_login` DISABLE KEYS */;
-INSERT INTO `user_login` VALUES (46,'prakash','prakash','2017-01-18 16:10:51','2017-01-18 16:10:51'),(47,'prakash1','prakash1','2017-01-18 17:42:01','2017-01-18 17:42:01');
+INSERT INTO `user_login` VALUES (46,'root','root','2017-01-18 16:10:51','2017-01-18 16:10:51'),(47,'root','root','2017-01-18 17:42:01','2017-01-18 17:42:01');
 /*!40000 ALTER TABLE `user_login` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

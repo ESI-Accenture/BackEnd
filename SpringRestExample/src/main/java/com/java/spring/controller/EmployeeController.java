@@ -3,9 +3,11 @@ package com.java.spring.controller;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.activity.InvalidActivityException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -57,9 +59,15 @@ public class EmployeeController {
 		logger.info("Start getEmployee. ID=" + empId);
 		return empService.getUser(new Long(empId));
 	}
+	
+	@RequestMapping(value = URIConstants.GET_IDEA_DETAILS, method = RequestMethod.GET)
+	public @ResponseBody List<NavritiDto> getIdeas() {
+		logger.info("Start getIdeas");
+		return empService.getIdeas();
+	}
 
 	@RequestMapping(value = URIConstants.CREATE_EMP, method = RequestMethod.POST)
-	public @ResponseBody Emp createEmployee(@RequestBody Emp emp) {
+	public @ResponseBody Emp createEmployee(@RequestBody Emp emp) throws InvalidActivityException {
 		logger.info("Start createEmployee.");
 		if (empService.validateUserName(emp.getUsername())) {
 			empService.addNewUser(emp);
@@ -168,20 +176,10 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = URIConstants.SAVE_IDEA, method = RequestMethod.POST)
-	public @ResponseBody ErrorDetails saveIdea(@RequestBody NavritiDto navritiDto) {
+	public @ResponseBody ErrorDetails saveIdea(@RequestBody NavritiDto navritiDto) throws Exception {
 		ErrorDetails errorDetails = new ErrorDetails();
 		logger.info("Start createEmployee.");
-		try {
-			empService.saveIdea(navritiDto);
-		} catch (DataIntegrityViolationException e) {
-			errorDetails.setErrorCode("500");
-			errorDetails.setErrorMessage("Invalid Request");
-		} catch (NullPointerException e) {
-			e.getMessage();
-		} catch (Exception e) {
-			errorDetails.setErrorCode("500");
-			errorDetails.setErrorMessage("Invalid Request");
-		}
+		empService.saveIdea(navritiDto);
 		errorDetails.setErrorCode("200");
 		errorDetails.setErrorMessage("SUCCESS");
 		System.out.println(navritiDto.toString());
@@ -189,37 +187,36 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = URIConstants.GET_IDEA_DETAILS_BY_USER_ID, method = RequestMethod.GET)
-	public @ResponseBody NavritiErrorDetails retrieveIdeaByUserId(@PathVariable("empUserId") Long empUserId) {
+	public @ResponseBody List<NavritiDto> retrieveIdeaByUserId(@PathVariable("empUserId") Long empUserId) {
 		NavritiErrorDetails navritiErrorDetails = new NavritiErrorDetails();
 		List<NavritiDto> navritiDto = null;
+		NavritiDto navritiDtoErr = new NavritiDto();;
 		try {
 			navritiDto = empService.getIdeaDetailsByUserId(empUserId);
-			navritiErrorDetails.setNavritiDto(navritiDto);
-		} catch (DataIntegrityViolationException e) {
-			navritiErrorDetails.setErrorCode("500");
-			navritiErrorDetails.setErrorMessage("Invalid Request");
-		} catch (Exception e) {
-			navritiErrorDetails.setErrorCode("500");
-			navritiErrorDetails.setErrorMessage("Invalid Request");
+			//navritiErrorDetails.setNavritiDto(new HashSet<NavritiDto>(navritiDto));
+		} catch (DataIntegrityViolationException e) {			
+			navritiDtoErr.setErrorCode("500");
+			navritiDtoErr.setErrorMessage("Invalid Request");
+		} catch (Exception e) {			
+			navritiDtoErr.setErrorCode("500");
+			navritiDtoErr.setErrorMessage("Invalid Request");
 		}
-		navritiErrorDetails.setErrorCode("200");
-		navritiErrorDetails.setErrorMessage("SUCCESS");
+		if(null!=navritiDto &&  navritiDto.size() > 0){
+			navritiDto.get(0).setErrorCode("200");
+			navritiDto.get(0).setErrorMessage("SUCCESS");			
+		}
+		else{
+			navritiDto = new ArrayList<NavritiDto>();
+			navritiDto.add(navritiDtoErr);
+		}
 		System.out.println(navritiDto.toString());
-		return navritiErrorDetails;
+		return navritiDto;
 	}
 
 	@RequestMapping(value = URIConstants.GET_IDEA_DETAILS_BY_IDEA_ID, method = RequestMethod.GET)
-	public @ResponseBody NavritiDto retrieveIdeaByIdeaId(@PathVariable("ideaId") Long ideaId) {
-		NavritiDto navritiDto = null;
-		try {
-			navritiDto = empService.getIdeaDetailsByIdeaId(ideaId);
-		} catch (DataIntegrityViolationException e) {
-			navritiDto.setErrorCode("500");
-			navritiDto.setErrorMessage("Invalid Request");
-		} catch (Exception e) {
-			navritiDto.setErrorCode("500");
-			navritiDto.setErrorMessage("Invalid Request");
-		}
+	public @ResponseBody NavritiDto retrieveIdeaByIdeaId(@PathVariable("ideaId") Long ideaId) throws Exception {
+		NavritiDto navritiDto = new NavritiDto();
+		navritiDto = empService.getIdeaDetailsByIdeaId(ideaId);
 		navritiDto.setErrorCode("200");
 		navritiDto.setErrorMessage("SUCCESS");
 		System.out.println(navritiDto.toString());

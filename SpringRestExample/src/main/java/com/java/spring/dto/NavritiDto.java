@@ -3,30 +3,32 @@ package com.java.spring.dto;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
 @JsonIgnoreProperties
+@JsonIgnoreType
 public class NavritiDto {
 
 	private Long ideaId;
 	private Long sapId;
 	private String ideaStage;
 	private String stageOutCome;
-	private Date SubmissionDate;
+	private String SubmissionDate;
 	private String portfolio;
 	private String applicationName;
 	private String submittedBy;
 	private String ideaClassification;
 	private String problemStatement;
 	private String solutionDescription;
-	private Date ideationDate;
+	private String ideationDate;
 	private Long perHourDollarRate;
 	private Long annualEffortSavings;
-	private Date smeReviewedDate;
-	private Date councilReviewedDate;
-	private Date clientReviewedDate;
-	private Date implementationDate;
+	private String smeReviewedDate;
+	private String councilReviewedDate;
+	private String clientReviewedDate;
+	private String implementationDate;
 	private Long savings;
-	private int elapsedTime;
+	private Integer elapsedTime;
 	private String client;
 	private String comments;
 	private String technology;
@@ -48,6 +50,7 @@ public class NavritiDto {
 	 * @return the sapId
 	 */
 	public Long getSapId() {
+		//hardcoded value needs to replace once session has been implimented
 		return sapId;
 	}
 	/**
@@ -83,13 +86,13 @@ public class NavritiDto {
 	/**
 	 * @return the submissionDate
 	 */
-	public Date getSubmissionDate() {
+	public String getSubmissionDate() {
 		return SubmissionDate;
 	}
 	/**
 	 * @param submissionDate the submissionDate to set
 	 */
-	public void setSubmissionDate(Date submissionDate) {
+	public void setSubmissionDate(String submissionDate) {
 		SubmissionDate = submissionDate;
 	}
 	/**
@@ -167,13 +170,13 @@ public class NavritiDto {
 	/**
 	 * @return the ideationDate
 	 */
-	public Date getIdeationDate() {
+	public String getIdeationDate() {
 		return ideationDate;
 	}
 	/**
 	 * @param ideationDate the ideationDate to set
 	 */
-	public void setIdeationDate(Date ideationDate) {
+	public void setIdeationDate(String ideationDate) {
 		this.ideationDate = ideationDate;
 	}
 	/**
@@ -203,49 +206,49 @@ public class NavritiDto {
 	/**
 	 * @return the smeReviewedDate
 	 */
-	public Date getSmeReviewedDate() {
+	public String getSmeReviewedDate() {
 		return smeReviewedDate;
 	}
 	/**
 	 * @param smeReviewedDate the smeReviewedDate to set
 	 */
-	public void setSmeReviewedDate(Date smeReviewedDate) {
+	public void setSmeReviewedDate(String smeReviewedDate) {
 		this.smeReviewedDate = smeReviewedDate;
 	}
 	/**
 	 * @return the councilReviewedDate
 	 */
-	public Date getCouncilReviewedDate() {
+	public String getCouncilReviewedDate() {
 		return councilReviewedDate;
 	}
 	/**
 	 * @param councilReviewedDate the councilReviewedDate to set
 	 */
-	public void setCouncilReviewedDate(Date councilReviewedDate) {
+	public void setCouncilReviewedDate(String councilReviewedDate) {
 		this.councilReviewedDate = councilReviewedDate;
 	}
 	/**
 	 * @return the clientReviewedDate
 	 */
-	public Date getClientReviewedDate() {
+	public String getClientReviewedDate() {
 		return clientReviewedDate;
 	}
 	/**
 	 * @param clientReviewedDate the clientReviewedDate to set
 	 */
-	public void setClientReviewedDate(Date clientReviewedDate) {
+	public void setClientReviewedDate(String clientReviewedDate) {
 		this.clientReviewedDate = clientReviewedDate;
 	}
 	/**
 	 * @return the implementationDate
 	 */
-	public Date getImplementationDate() {
+	public String getImplementationDate() {
 		return implementationDate;
 	}
 	/**
 	 * @param implementationDate the implementationDate to set
 	 */
-	public void setImplementationDate(Date implementationDate) {
+	public void setImplementationDate(String implementationDate) {
 		this.implementationDate = implementationDate;
 	}
 	/**
@@ -263,13 +266,13 @@ public class NavritiDto {
 	/**
 	 * @return the elapsedTime
 	 */
-	public int getElapsedTime() {
+	public Integer getElapsedTime() {
 		return elapsedTime;
 	}
 	/**
 	 * @param elapsedTime the elapsedTime to set
 	 */
-	public void setElapsedTime(int elapsedTime) {
+	public void setElapsedTime(Integer elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
 	/**

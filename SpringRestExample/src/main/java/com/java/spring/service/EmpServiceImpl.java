@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.activity.InvalidActivityException;
 import javax.sound.sampled.Port;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +37,8 @@ import com.java.spring.model.TimesheetDetails;
 import com.java.spring.model.UserLogin;
 import com.java.spring.utils.EmpUtils;
 
+import javassist.NotFoundException;
+
 @Service
 public class EmpServiceImpl implements EmpService {
 
@@ -43,7 +46,7 @@ public class EmpServiceImpl implements EmpService {
 	@Qualifier("empDao")
 	private EmpDao empDao;
 
-	public Emp addNewUser(Emp emp) {
+	public Emp addNewUser(Emp emp) throws InvalidActivityException {
 		EmployeeDetails empData = new EmployeeDetails();
 		if (StringUtils.isNotBlank(emp.getDateOfbirth())) {
 			Date date = EmpUtils.convertStringToDate(emp.getDateOfbirth());
@@ -167,7 +170,7 @@ public class EmpServiceImpl implements EmpService {
 	}
 
 	@Override
-	public DsrDto saveOrUpdate(DsrDto dsrDto) {
+	public DsrDto saveOrUpdate(DsrDto dsrDto) throws InvalidActivityException {
 		TimesheetDetails timesheetDetails = new TimesheetDetails();
 		EmployeeDetails employeeDetails = new EmployeeDetails();
 		AppDetails appDetails = new AppDetails();
@@ -289,27 +292,57 @@ public class EmpServiceImpl implements EmpService {
 	public NavritiDto saveIdea(NavritiDto navritiDto) throws Exception {
 		Date date = new Date();
 		NavritiDetails navritiDetails = new NavritiDetails();
-		navritiDetails.setIdeaId(navritiDto.getIdeaId());
-		navritiDetails.setAnnualEffortSavings(navritiDto.getAnnualEffortSavings());
-		navritiDetails.setApplicationName(navritiDto.getApplicationName());
-		navritiDetails.setClient(navritiDto.getClient());
-		navritiDetails.setComments(navritiDto.getComments());
-		navritiDetails.setIdeaClassification(navritiDto.getIdeaClassification());
-		navritiDetails.setIdeaStage(navritiDto.getIdeaStage());
-		navritiDetails.setIdeationDate(date);
-		navritiDetails.setPortfolio(navritiDto.getPortfolio());
-		navritiDetails.setProblemStatement(navritiDto.getProblemStatement());
-		navritiDetails.setSapId(navritiDto.getSapId());
-		navritiDetails.setSavings(navritiDto.getSavings());
-		navritiDetails.setSolutionDescription(navritiDto.getSolutionDescription());
-		navritiDetails.setSubmissionDate(date);
-		navritiDetails.setSmeReviewedDate(date);
-		navritiDetails.setImplementationDate(date);
-		navritiDetails.setSubmittedBy(navritiDto.getSubmittedBy());
-		navritiDetails.setTechnology(navritiDto.getTechnology());
+		if (null != navritiDto.getIdeaId() && navritiDto.getIdeaId() != 0) {
+			navritiDetails = empDao.getIdeaDetailsByIdeaId(navritiDto.getIdeaId());
+			if (null == navritiDetails || null == navritiDetails.getIdeaId()) {
+				throw new NotFoundException("Idea Id is not exist In the Database");
+			}
+			UpdateModifiedFields(navritiDetails, navritiDto);
+		} else {
+			navritiDetails.setIdeaId(navritiDto.getIdeaId());
+			navritiDetails.setAnnualEffortSavings(navritiDto.getAnnualEffortSavings());
+			navritiDetails.setApplicationName(navritiDto.getApplicationName());
+			navritiDetails.setClient(navritiDto.getClient());
+			navritiDetails.setComments(navritiDto.getComments());
+			navritiDetails.setIdeaClassification(navritiDto.getIdeaClassification());
+			navritiDetails.setIdeaStage(navritiDto.getIdeaStage());
+			navritiDetails.setIdeationDate(date);
+			navritiDetails.setPortfolio(navritiDto.getPortfolio());
+			navritiDetails.setProblemStatement(navritiDto.getProblemStatement());
+			navritiDetails.setSapId(navritiDto.getSapId());
+			navritiDetails.setSavings(navritiDto.getSavings());
+			navritiDetails.setSolutionDescription(navritiDto.getSolutionDescription());
+			navritiDetails.setSubmissionDate(date);
+			navritiDetails.setSmeReviewedDate(date);
+			navritiDetails.setImplementationDate(date);
+			navritiDetails.setSubmittedBy(navritiDto.getSubmittedBy());
+			navritiDetails.setTechnology(navritiDto.getTechnology());
+		}
 		empDao.saveOrUpdateObject(navritiDetails);
 		return null;
 	}
+
+	private void UpdateModifiedFields(NavritiDetails navritiDetails, NavritiDto navritiDto) throws InvalidActivityException {
+		if(null != navritiDetails && null!= navritiDetails.getIdeaStage()){
+			switch (navritiDetails.getIdeaStage().toUpperCase()) {
+			case "SME REVIEWED":
+				navritiDetails.setSmeReviewedDate(new Date());
+				break;
+			case "COUNCIL REVIEWED":
+				navritiDetails.setCouncilReviewedDate(new Date());
+				break;
+			case "CLIENT REVIEWED":
+				navritiDetails.setClientReviewedDate(new Date());
+				break;
+			case "IMPLIMENTATION":
+				navritiDetails.setImplementationDate(new Date());
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
 
 	@Override
 	public List<NavritiDto> getIdeaDetailsByUserId(Long empUserId) throws Exception {
@@ -319,25 +352,25 @@ public class EmpServiceImpl implements EmpService {
 			NavritiDto navritiDto = new NavritiDto();
 			navritiDto.setAnnualEffortSavings(navritiDetails.getAnnualEffortSavings());
 			navritiDto.setApplicationName(navritiDetails.getApplicationName());
-			navritiDto.setClientReviewedDate(navritiDetails.getClientReviewedDate());
+			navritiDto.setClientReviewedDate(EmpUtils.convertDateToString(navritiDetails.getClientReviewedDate()));
 			navritiDto.setClient(navritiDetails.getClient());
 			navritiDto.setComments(navritiDetails.getComments());
-			navritiDto.setCouncilReviewedDate(navritiDetails.getCouncilReviewedDate());
+			navritiDto.setCouncilReviewedDate(EmpUtils.convertDateToString(navritiDetails.getCouncilReviewedDate()));
 			navritiDto.setElapsedTime(navritiDetails.getElapsedTime());
 			navritiDto.setSapId(navritiDetails.getSapId());
 			navritiDto.setIdeaClassification(navritiDetails.getIdeaClassification());
 			navritiDto.setIdeaId(navritiDetails.getIdeaId());
 			navritiDto.setIdeaStage(navritiDetails.getIdeaStage());
-			navritiDto.setIdeationDate(navritiDetails.getIdeationDate());
-			navritiDto.setImplementationDate(navritiDetails.getImplementationDate());
+			navritiDto.setIdeationDate(EmpUtils.convertDateToString(navritiDetails.getIdeationDate()));
+			navritiDto.setImplementationDate(EmpUtils.convertDateToString(navritiDetails.getImplementationDate()));
 			navritiDto.setPerHourDollarRate(navritiDetails.getPerHourDollarRate());
 			navritiDto.setPortfolio(navritiDetails.getPortfolio());
 			navritiDto.setProblemStatement(navritiDetails.getProblemStatement());
 			navritiDto.setSavings(navritiDetails.getSavings());
-			navritiDto.setSmeReviewedDate(navritiDetails.getSmeReviewedDate());
+			navritiDto.setSmeReviewedDate(EmpUtils.convertDateToString(navritiDetails.getSmeReviewedDate()));
 			navritiDto.setSolutionDescription(navritiDetails.getSolutionDescription());
 			navritiDto.setStageOutCome(navritiDetails.getStageOutCome());
-			navritiDto.setSubmissionDate(navritiDetails.getSubmissionDate());
+			navritiDto.setSubmissionDate(EmpUtils.convertDateToString((navritiDetails.getSubmissionDate())));
 			navritiDto.setSubmittedBy(navritiDetails.getSubmittedBy());
 			navritiDto.setTechnology(navritiDetails.getTechnology());
 			navritiDtoList.add(navritiDto);
@@ -366,27 +399,30 @@ public class EmpServiceImpl implements EmpService {
 	public NavritiDto getIdeaDetailsByIdeaId(Long ideaId) throws Exception {
 		NavritiDto navritiDto = new NavritiDto();
 		NavritiDetails navritiDetails = empDao.getIdeaDetailsByIdeaId(ideaId);
+		if (null == navritiDetails || null == navritiDetails.getIdeaId() || navritiDetails.getIdeaId() == 0) {
+			throw new NotFoundException("Idea Id is not exist");
+		}
 		navritiDto.setAnnualEffortSavings(navritiDetails.getAnnualEffortSavings());
 		navritiDto.setApplicationName(navritiDetails.getApplicationName());
-		navritiDto.setClientReviewedDate(navritiDetails.getClientReviewedDate());
+		navritiDto.setClientReviewedDate(EmpUtils.convertDateToString(navritiDetails.getClientReviewedDate()));
 		navritiDto.setClient(navritiDetails.getClient());
 		navritiDto.setComments(navritiDetails.getComments());
-		navritiDto.setCouncilReviewedDate(navritiDetails.getCouncilReviewedDate());
+		navritiDto.setCouncilReviewedDate(EmpUtils.convertDateToString(navritiDetails.getCouncilReviewedDate()));
 		navritiDto.setElapsedTime(navritiDetails.getElapsedTime());
 		navritiDto.setSapId(navritiDetails.getSapId());
 		navritiDto.setIdeaClassification(navritiDetails.getIdeaClassification());
 		navritiDto.setIdeaId(navritiDetails.getIdeaId());
 		navritiDto.setIdeaStage(navritiDetails.getIdeaStage());
-		navritiDto.setIdeationDate(navritiDetails.getIdeationDate());
-		navritiDto.setImplementationDate(navritiDetails.getImplementationDate());
+		navritiDto.setIdeationDate(EmpUtils.convertDateToString(navritiDetails.getIdeationDate()));
+		navritiDto.setImplementationDate(EmpUtils.convertDateToString(navritiDetails.getImplementationDate()));
 		navritiDto.setPerHourDollarRate(navritiDetails.getPerHourDollarRate());
 		navritiDto.setPortfolio(navritiDetails.getPortfolio());
 		navritiDto.setProblemStatement(navritiDetails.getProblemStatement());
 		navritiDto.setSavings(navritiDetails.getSavings());
-		navritiDto.setSmeReviewedDate(navritiDetails.getSmeReviewedDate());
+		navritiDto.setSmeReviewedDate(EmpUtils.convertDateToString(navritiDetails.getSmeReviewedDate()));
 		navritiDto.setSolutionDescription(navritiDetails.getSolutionDescription());
 		navritiDto.setStageOutCome(navritiDetails.getStageOutCome());
-		navritiDto.setSubmissionDate(navritiDetails.getSubmissionDate());
+		navritiDto.setSubmissionDate(EmpUtils.convertDateToString(navritiDetails.getSubmissionDate()));
 		navritiDto.setSubmittedBy(navritiDetails.getSubmittedBy());
 		navritiDto.setTechnology(navritiDetails.getTechnology());
 		return navritiDto;
@@ -410,5 +446,41 @@ public class EmpServiceImpl implements EmpService {
 			map.put(appDetails.getId(), appDetails.getAppDesc());
 		}
 		return map;
+	}
+
+	@Override
+	public List<NavritiDto> getIdeas() {
+
+		List<NavritiDto> navritiDtoList = new ArrayList<NavritiDto>();
+		List<NavritiDetails> navritiData = empDao.getIdeaDetails();
+		for (NavritiDetails navritiDetails : navritiData) {
+			NavritiDto navritiDto = new NavritiDto();
+			navritiDto.setAnnualEffortSavings(navritiDetails.getAnnualEffortSavings());
+			navritiDto.setApplicationName(navritiDetails.getApplicationName());
+			navritiDto.setClientReviewedDate(EmpUtils.convertDateToString(navritiDetails.getClientReviewedDate()));
+			navritiDto.setClient(navritiDetails.getClient());
+			navritiDto.setComments(navritiDetails.getComments());
+			navritiDto.setCouncilReviewedDate(EmpUtils.convertDateToString(navritiDetails.getCouncilReviewedDate()));
+			navritiDto.setElapsedTime(navritiDetails.getElapsedTime());
+			navritiDto.setSapId(navritiDetails.getSapId());
+			navritiDto.setIdeaClassification(navritiDetails.getIdeaClassification());
+			navritiDto.setIdeaId(navritiDetails.getIdeaId());
+			navritiDto.setIdeaStage(navritiDetails.getIdeaStage());
+			navritiDto.setIdeationDate(EmpUtils.convertDateToString(navritiDetails.getIdeationDate()));
+			navritiDto.setImplementationDate(EmpUtils.convertDateToString(navritiDetails.getImplementationDate()));
+			navritiDto.setPerHourDollarRate(navritiDetails.getPerHourDollarRate());
+			navritiDto.setPortfolio(navritiDetails.getPortfolio());
+			navritiDto.setProblemStatement(navritiDetails.getProblemStatement());
+			navritiDto.setSavings(navritiDetails.getSavings());
+			navritiDto.setSmeReviewedDate(EmpUtils.convertDateToString(navritiDetails.getSmeReviewedDate()));
+			navritiDto.setSolutionDescription(navritiDetails.getSolutionDescription());
+			navritiDto.setStageOutCome(navritiDetails.getStageOutCome());
+			navritiDto.setSubmissionDate(EmpUtils.convertDateToString((navritiDetails.getSubmissionDate())));
+			navritiDto.setSubmittedBy(navritiDetails.getSubmittedBy());
+			navritiDto.setTechnology(navritiDetails.getTechnology());
+			navritiDtoList.add(navritiDto);
+		}
+		System.out.println(navritiDtoList);
+		return navritiDtoList;
 	}
 }
